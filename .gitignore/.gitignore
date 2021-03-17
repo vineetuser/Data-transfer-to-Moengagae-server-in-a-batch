@@ -1,0 +1,51 @@
+import csv
+import math
+
+csvfile = open('C:/Users/120219/Downloads/CA.csv')
+reader = csv.DictReader(csvfile)
+row=0
+u_data=[]
+for row in reader:
+    mobile_number = row['Mobile Number']
+    cif_id = row['ID']
+    first_name= row['First Name']
+    last_name= row['Last Name']
+    mail_id= row['Email']
+
+    user_data = {'type': 'customer', 
+             'customer_id': cif_id,
+              'attributes': {   
+        'first_name': first_name,
+        'last_name': last_name,
+        'mobile': mobile_number,
+        'email': mail_id         
+        }
+                }
+    u_data.append(user_data)
+    
+
+user_data_new= {}
+user_data_new["type"] = "transition"
+
+no_of_user_records= 150
+
+x_user= len(u_data)/no_of_user_records
+i= math.ceil(x_user)
+
+while i>0:
+    user_data_new["elements"] = u_data[0:no_of_user_records]
+    import requests
+
+    newHeaders = \
+        {'Authorization': 'Basic SDI4UlZIWEg4SlY3Vk5IUzhINlREWUJYX0RFQlVHOjQ4VFBBMWhoU3hKY18xRzVpMXpRbDZRLQ==',
+         'Content-Type': 'application/json',
+         'MOE-APPKEY': 'H28RVHXH8JV7VNHS8H6TDYBX_DEBUG'}
+
+    response = \
+        requests.post('https://api-serv3.moengage.com/v1/transition/H28RVHXH8JV7VNHS8H6TDYBX_DEBUG'
+                      , json=user_data_new, headers=newHeaders)
+
+    print ('Status code: ', response.status_code)
+    del u_data[0:no_of_user_records]
+    i-=1
+    
